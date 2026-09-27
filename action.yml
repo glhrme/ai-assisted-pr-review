@@ -1,0 +1,65 @@
+name: 'AI Assisted PR Review'
+description: 'Agentic AI code review for pull requests against any OpenAI-compatible endpoint (OpenAI, Azure OpenAI, OpenRouter, Groq, LiteLLM, vLLM, Ollama, ...).'
+author: 'guisantosbtv'
+branding:
+  icon: 'search'
+  color: 'purple'
+
+inputs:
+  github_token:
+    description: 'Token used to read the PR and post review comments. Usually secrets.GITHUB_TOKEN.'
+    required: true
+  api_key:
+    description: 'API key for the LLM endpoint.'
+    required: true
+  base_url:
+    description: 'Base URL of an OpenAI-compatible Chat Completions endpoint (e.g. https://api.openai.com/v1, an Azure OpenAI resource URL, an OpenRouter/Groq/LiteLLM proxy, or a self-hosted vLLM/Ollama URL).'
+    required: false
+    default: 'https://api.openai.com/v1'
+  model:
+    description: 'Model name as expected by the endpoint (e.g. gpt-4.1-mini, an Azure deployment name, or a self-hosted model id).'
+    required: true
+  extra_headers:
+    description: 'JSON object of extra HTTP headers to send with every request (e.g. Azure "api-key", or a gateway auth header). Merged on top of the Authorization header.'
+    required: false
+    default: ''
+  temperature:
+    description: 'Sampling temperature passed to the model.'
+    required: false
+    default: '0.2'
+  max_iterations:
+    description: 'Maximum number of agent tool-calling round-trips before the review is force-stopped.'
+    required: false
+    default: '40'
+  max_files:
+    description: 'Maximum number of changed files to review in a single run.'
+    required: false
+    default: '60'
+  include_extensions:
+    description: 'Comma-separated file extensions to include (e.g. ".py,.ts"). Empty means all.'
+    required: false
+    default: ''
+  exclude_extensions:
+    description: 'Comma-separated file extensions to exclude (e.g. ".lock,.min.js").'
+    required: false
+    default: ''
+  include_paths:
+    description: 'Comma-separated path prefixes to include (e.g. "src/,app/"). Empty means all.'
+    required: false
+    default: ''
+  exclude_paths:
+    description: 'Comma-separated path prefixes or globs to exclude (e.g. "dist/,**/*.generated.*").'
+    required: false
+    default: ''
+  review_rules_file:
+    description: 'Path (relative to repo root, read from the PR head commit) to a file with custom review instructions appended to the system prompt.'
+    required: false
+    default: ''
+  fail_action_if_review_failed:
+    description: 'If true, the Action step fails when the review process errors out.'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
